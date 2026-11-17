@@ -1,0 +1,61 @@
+require("dotenv").config();
+const express = require("express");
+const TelegramBot = require("node-telegram-bot-api");
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+
+if (!TOKEN) {
+  console.log("Faltou TELEGRAM_BOT_TOKEN");
+  process.exit(1);
+}
+
+const bot = new TelegramBot(TOKEN, { polling: true });
+
+bot.onText(/\/start|start/i, (msg) => {
+  const chatId = msg.chat.id;
+  const text = `
+Bem-vindo(a)!
+
+Escolha:
+- /start
+- comprar
+- pedidos
+- suporte
+`;
+  bot.sendMessage(chatId, text);
+});
+
+bot.onText(/comprar/i, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(
+    chatId,
+    "Produtos disponíveis:\n1 - Camisa Básica - R$ 59,90\n2 - Tênis Casual - R$ 199,90\n3 - Mochila - R$ 129,90"
+  );
+});
+
+bot.onText(/pedidos/i, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(
+    chatId,
+    "Seus pedidos:\n#1234 - Em processamento\n#5678 - Enviado\n#9012 - Entregue"
+  );
+});
+
+bot.onText(/suporte/i, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(
+    chatId,
+    "Atendimento:\n1 - Pedido\n2 - Troca/Devolução\n3 - Problema com entrega\n4 - Falar com atendente"
+  );
+});
+
+app.get("/", (req, res) => {
+  res.send("Bot funcionando.");
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
